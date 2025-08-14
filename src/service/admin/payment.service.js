@@ -12,23 +12,18 @@ paymentService.createCheckoutSession = async (request) => {
     const { planType, billingCycle, successUrl, cancelUrl } = request.body;
     const userId = request.auth._id;
     
-    // Get user details
     const user = await userModel.findById(userId);
     if (!user) {
         throw new Error('User not found');
     }
-
-    // Create or get Stripe customer
     let stripeCustomerId = user.stripeCustomerId;
     if (!stripeCustomerId) {
         const customer = await stripeHelper.createCustomer(user.email, user.name, userId);
         stripeCustomerId = customer.id;
         
-        // Update user with Stripe customer ID
         await userModel.findByIdAndUpdate(userId, { stripeCustomerId });
     }
 
-    // Create checkout session
     const session = await stripeHelper.createCheckoutSession(
         stripeCustomerId,
         planType,
@@ -37,8 +32,6 @@ paymentService.createCheckoutSession = async (request) => {
         cancelUrl,
         userId
     );
-
-    // Create payment record
     const planConfig = stripeHelper.planConfigs[planType][billingCycle];
     const payment = await paymentModel.create({
         userId,

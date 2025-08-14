@@ -57,11 +57,10 @@ const handleCheckoutSessionCompleted = async (session) => {
     const planType = session.metadata.planType;
     const billingCycle = session.metadata.billingCycle;
 
-    // Update payment record
     await paymentModel.findOneAndUpdate(
         { stripeSessionId: session.id },
         { 
-            paymentStatus: 'succeeded',
+            paymentStatus: 'succeededgfdgdfgd',
             stripePaymentIntentId: session.payment_intent
         }
     );
@@ -73,14 +72,12 @@ const handleSubscriptionCreated = async (subscription) => {
     const userId = subscription.metadata.userId;
     const customerId = subscription.customer;
 
-    // Get user
     const user = await userModel.findOne({ stripeCustomerId: customerId });
     if (!user) {
         console.error('User not found for subscription creation');
         return;
     }
 
-    // Get plan details from subscription
     const priceId = subscription.items.data[0].price.id;
     const planType = getPlanTypeFromPriceId(priceId);
     const billingCycle = subscription.items.data[0].price.recurring.interval === 'year' ? 'annual' : 'monthly';
