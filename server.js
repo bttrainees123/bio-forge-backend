@@ -37,6 +37,7 @@ app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 // Regular middleware (removed the duplicate express.json() here)
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(fileUpload())
+app.use(express.json({ limit: "50mb" }));
 
 // UserReportCronService.startCronJob();
 
