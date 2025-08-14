@@ -8,7 +8,6 @@ const themeController = require('../../controller/app/theme.controller');
 const videoController = require('../../controller/app/video.controller');
 const subscribeController = require('../../controller/app/subscribe.controller');
 const linkCategoryController = require('../../controller/app/linkCategory.controller');
-const subscriptionController = require('../../controller/app/subscription.controller');
 
 userRouter.post("/register",authController.register);
 userRouter.post("/login",authController.login);
@@ -62,5 +61,4 @@ userRouter.get('/status-linkCategory',middleWare,linkCategoryController.status);
 userRouter.post('/add-subscribe',middleWare,subscribeController.add);
 userRouter.get('/getAll-subscribe',middleWare,subscribeController.getAll);
 //subscription
-userRouter.get("/getSubscription", middleWare, subscriptionController.getUserInfo)
 module.exports=userRouter

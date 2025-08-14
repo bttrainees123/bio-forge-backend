@@ -60,7 +60,7 @@ const handleCheckoutSessionCompleted = async (session) => {
     await paymentModel.findOneAndUpdate(
         { stripeSessionId: session.id },
         { 
-            paymentStatus: 'succeededgfdgdfgd',
+            paymentStatus: 'succeeded',
             stripePaymentIntentId: session.payment_intent
         }
     );
@@ -82,7 +82,6 @@ const handleSubscriptionCreated = async (subscription) => {
     const planType = getPlanTypeFromPriceId(priceId);
     const billingCycle = subscription.items.data[0].price.recurring.interval === 'year' ? 'annual' : 'monthly';
 
-    // Create subscription record
     const newSubscription = await subscriptionModel.create({
         userId: user._id,
         stripeSubscriptionId: subscription.id,
@@ -95,7 +94,6 @@ const handleSubscriptionCreated = async (subscription) => {
         currency: subscription.currency
     });
 
-    // Update user with subscription details
     const planLimits = paymentHelper.getPlanLimits(planType);
     await userModel.findByIdAndUpdate(user._id, {
         currentPlan: planType,
@@ -135,13 +133,11 @@ const handleSubscriptionUpdated = async (subscription) => {
 };
 
 const handleSubscriptionDeleted = async (subscription) => {
-    // Update subscription record
     await subscriptionModel.findOneAndUpdate(
         { stripeSubscriptionId: subscription.id },
         { subscriptionStatus: 'canceled' }
     );
 
-    // Downgrade user to free plan
     const localSubscription = await subscriptionModel.findOne({ stripeSubscriptionId: subscription.id });
     if (localSubscription) {
         const freePlanLimits = paymentHelper.getPlanLimits('free');
@@ -158,15 +154,12 @@ const handleSubscriptionDeleted = async (subscription) => {
 
 const handleInvoicePaymentSucceeded = async (invoice) => {
     console.log(`Invoice payment succeeded: ${invoice.id}`);
-    // Handle successful recurring payment
 };
 
 const handleInvoicePaymentFailed = async (invoice) => {
     console.log(`Invoice payment failed: ${invoice.id}`);
-    // Handle failed payment - maybe send email notification
 };
 
-// Helper function to determine plan type from price ID
 const getPlanTypeFromPriceId = (priceId) => {
     const priceMapping = {
         [process.env.STRIPE_PRO_MONTHLY_PRICE_ID]: 'pro',

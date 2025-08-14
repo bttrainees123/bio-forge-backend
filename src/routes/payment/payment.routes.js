@@ -1,23 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const paymentController = require('../../controller/app/payment.controller');
+const paymentController = require('../../controller/admin/payment.controller');
+const authMiddleware = require('../../middleware/user.middleware');
+const { handleStripeWebhook } = require('../../webhooks/stripe.webhook');
 
-// Create checkout session
-router.post('/create-checkout-session', paymentController.createCheckoutSession);
+// Protected routes
+router.post('/create-checkout-session', authMiddleware, paymentController.createCheckoutSession);
+router.post('/verify-payment', authMiddleware, paymentController.verifyPayment);
+router.get('/subscription', authMiddleware, paymentController.getUserSubscription);
+router.post('/cancel-subscription', authMiddleware, paymentController.cancelSubscription);
+router.get('/history', authMiddleware, paymentController.getPaymentHistory);
 
-// Get checkout session details
-router.get('/checkout-session/:sessionId', paymentController.getCheckoutSession);
-
-// Create customer portal session
-router.post('/create-portal-session', paymentController.createPortalSession);
-
-// Get subscription details
-router.get('/subscription/:subscriptionId', paymentController.getSubscription);
-
-// Cancel subscription
-router.post('/cancel-subscription', paymentController.cancelSubscription);
-
-// Webhook endpoint
-router.post('/webhook', paymentController.handleWebhook);
+// Webhook route (no auth required)
+router.post('/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const userRouter = require("./src/routes/app/user.routes")
 const adminRouter = require("./src/routes/admin/admin.routes")
 const imageRouter = require("./src/routes/upload/upload.route")
-const paymentRouter = require("./src/routes/admin/payment.routes") // New payment routes
+const paymentRouter = require("./src/routes/payment/payment.routes") // New payment routes
 const mongooseConnection = require("./src/config/db");
 
 const app = express();
