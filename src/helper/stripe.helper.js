@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripeConfig = require('../../src/config/stripe');
 
 const stripeHelper = {
     // Plan configurations matching your frontend
@@ -39,8 +40,8 @@ const stripeHelper = {
                 quantity: 1,
             }],
             mode: 'subscription',
-            success_url: successUrl,
-            cancel_url: cancelUrl,
+            success_url: stripeConfig.successUrl,
+            cancel_url: stripeConfig.cancelUrl,
             metadata: {
                 userId: userId.toString(),
                 planType,
