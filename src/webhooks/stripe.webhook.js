@@ -10,42 +10,55 @@ const handleStripeWebhook = async (request, response) => {
 
     try {
         event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        console.log('Webhook event received:', event.type, 'ID:', event.id);
     } catch (err) {
         console.log(`Webhook signature verification failed.`, err.message);
         return response.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     try {
+        console.log('Processing event type:', event.type);
+        
         switch (event.type) {
             case 'checkout.session.completed':
+                console.log('Executing handleCheckoutSessionCompleted');
                 await handleCheckoutSessionCompleted(event.data.object);
                 break;
             
             case 'invoice.payment_succeeded':
+                console.log('Executing handleInvoicePaymentSucceeded');
                 await handleInvoicePaymentSucceeded(event.data.object);
                 break;
             
             case 'invoice.payment_failed':
+                console.log('Executing handleInvoicePaymentFailed');
                 await handleInvoicePaymentFailed(event.data.object);
                 break;
             
             case 'customer.subscription.created':
+                console.log('Executing handleSubscriptionCreated');
                 await handleSubscriptionCreated(event.data.object);
                 break;
             
             case 'customer.subscription.updated':
+                console.log('Executing handleSubscriptionUpdated');
                 await handleSubscriptionUpdated(event.data.object);
                 break;
             
             case 'customer.subscription.deleted':
+                console.log('Executing handleSubscriptionDeleted');
                 await handleSubscriptionDeleted(event.data.object);
                 break;
             
             default:
                 console.log(`Unhandled event type ${event.type}`);
         }
+        
+        console.log('Event processing completed successfully');
     } catch (error) {
         console.error('Error processing webhook:', error);
+        console.error('Event type:', event.type);
+        console.error('Event data:', JSON.stringify(event.data.object, null, 2));
         return response.status(500).send('Webhook processing failed');
     }
 
@@ -53,10 +66,13 @@ const handleStripeWebhook = async (request, response) => {
 };
 
 const handleCheckoutSessionCompleted = async (session) => {
+    console.log('Checkout session completed:', JSON.stringify(session, null, 2));
+    
     const userId = session.metadata.userId;
     const planType = session.metadata.planType;
     const billingCycle = session.metadata.billingCycle;
 
+    // Update payment record
     await paymentModel.findOneAndUpdate(
         { stripeSessionId: session.id },
         { 
@@ -65,29 +81,82 @@ const handleCheckoutSessionCompleted = async (session) => {
         }
     );
 
+    // If this is a subscription checkout, handle subscription creation here as backup
+    if (session.mode === 'subscription' && session.subscription) {
+        console.log('Checkout session is for subscription:', session.subscription);
+        
+        try {
+            // Retrieve the full subscription object
+            const subscription = await stripe.subscriptions.retrieve(session.subscription);
+            console.log('Retrieved subscription:', JSON.stringify(subscription, null, 2));
+            
+            // Check if we've already processed this subscription
+            const existingSubscription = await subscriptionModel.findOne({ 
+                stripeSubscriptionId: subscription.id 
+            });
+            
+            if (!existingSubscription) {
+                console.log('Subscription not found in DB, creating from checkout session');
+                // Call our subscription handler manually
+                await handleSubscriptionCreated(subscription);
+            } else {
+                console.log('Subscription already exists in DB');
+            }
+        } catch (error) {
+            console.error('Error handling subscription from checkout:', error);
+        }
+    }
+
     console.log(`Checkout session completed for user ${userId}, plan: ${planType}`);
 };
 
 const handleSubscriptionCreated = async (subscription) => {
-    const userId = subscription.metadata.userId;
+    console.log('handleSubscriptionCreated called with:', JSON.stringify(subscription, null, 2));
+    
+    // Try to get userId from metadata first
+    let userId = subscription.metadata?.userId;
     const customerId = subscription.customer;
 
+    // If no userId in subscription metadata, try to find user by customer ID
     const user = await userModel.findOne({ stripeCustomerId: customerId });
     if (!user) {
-        console.error('User not found for subscription creation');
+        console.error('User not found for subscription creation. Customer ID:', customerId);
         return;
+    }
+
+    // Use the user ID from database if not in metadata
+    if (!userId) {
+        userId = user._id.toString();
+        console.log('Retrieved userId from database:', userId);
     }
 
     const priceId = subscription.items.data[0].price.id;
     const planType = getPlanTypeFromPriceId(priceId);
     const billingCycle = subscription.items.data[0].price.recurring.interval === 'year' ? 'annual' : 'monthly';
 
+    console.log('Creating subscription with:', {
+        userId: user._id,
+        planType,
+        billingCycle,
+        subscriptionId: subscription.id
+    });
+
+    // Check if subscription already exists
+    const existingSubscription = await subscriptionModel.findOne({ 
+        stripeSubscriptionId: subscription.id 
+    });
+    
+    if (existingSubscription) {
+        console.log('Subscription already exists:', subscription.id);
+        return;
+    }
+
     const newSubscription = await subscriptionModel.create({
         userId: user._id,
         stripeSubscriptionId: subscription.id,
         planType,
         billingCycle,
-        subscriptionStatus: 'active',
+        subscriptionStatus: subscription.status, // Use actual status from Stripe
         currentPeriodStart: new Date(subscription.current_period_start * 1000),
         currentPeriodEnd: new Date(subscription.current_period_end * 1000),
         amount: subscription.items.data[0].price.unit_amount / 100,
@@ -97,7 +166,7 @@ const handleSubscriptionCreated = async (subscription) => {
     const planLimits = paymentHelper.getPlanLimits(planType);
     await userModel.findByIdAndUpdate(user._id, {
         currentPlan: planType,
-        planStatus: 'active',
+        planStatus: subscription.status, // Use actual status
         subscriptionId: newSubscription._id,
         subscriberLimit: planLimits.subscriberLimit === -1 ? 999999 : planLimits.subscriberLimit,
         planStartDate: new Date(subscription.current_period_start * 1000),
@@ -105,7 +174,7 @@ const handleSubscriptionCreated = async (subscription) => {
         $push: { paymentHistory: newSubscription._id }
     });
 
-    console.log(`Subscription created for user ${user._id}, plan: ${planType}`);
+    console.log(`Subscription created successfully for user ${user._id}, plan: ${planType}`);
 };
 
 const handleSubscriptionUpdated = async (subscription) => {
@@ -154,6 +223,30 @@ const handleSubscriptionDeleted = async (subscription) => {
 
 const handleInvoicePaymentSucceeded = async (invoice) => {
     console.log(`Invoice payment succeeded: ${invoice.id}`);
+    console.log('Invoice details:', JSON.stringify(invoice, null, 2));
+
+    // If this is the first invoice for a subscription, handle subscription creation
+    if (invoice.subscription && invoice.billing_reason === 'subscription_create') {
+        try {
+            // Check if we've already processed this subscription
+            const existingSubscription = await subscriptionModel.findOne({ 
+                stripeSubscriptionId: invoice.subscription 
+            });
+            
+            if (!existingSubscription) {
+                console.log('First invoice for new subscription, retrieving subscription details');
+                // Retrieve the full subscription object
+                const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+                
+                // Call our subscription handler
+                await handleSubscriptionCreated(subscription);
+            } else {
+                console.log('Subscription already exists in DB');
+            }
+        } catch (error) {
+            console.error('Error handling subscription from invoice:', error);
+        }
+    }
 };
 
 const handleInvoicePaymentFailed = async (invoice) => {
