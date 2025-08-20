@@ -58,7 +58,7 @@ userRouter.delete('/delete-linkCategory',middleWare,linkCategoryController.delet
 userRouter.get('/getAll-linkCategory',middleWare,linkCategoryController.getAll);
 userRouter.get('/status-linkCategory',middleWare,linkCategoryController.status);
 //subscribe
-userRouter.post('/add-subscribe',middleWare,subscribeController.add);
+userRouter.post('/add-subscribe',subscribeController.add);
 userRouter.get('/getAll-subscribe',middleWare,subscribeController.getAll);
 //subscription
 module.exports=userRouter

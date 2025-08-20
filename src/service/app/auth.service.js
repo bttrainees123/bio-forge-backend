@@ -478,7 +478,7 @@ authService.getAll = async (request) => {
                             from: 'linkcategories',
                             localField: "LinkCategoryId",
                             foreignField: "_id",
-                            as: 'linkcategory',
+                            as: 'LinkCategoryId',
                             pipeline: [
                                 {
                                     $match: {
@@ -496,12 +496,12 @@ authService.getAll = async (request) => {
                             ]
                         }
                     },
-                    {
-                        $unwind: {
-                            path: "$linkcategory",
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
+                    // {
+                    //     $unwind: {
+                    //         path: "$linkcategory",
+                    //         preserveNullAndEmptyArrays: true
+                    //     }
+                    // },
                     {
                         $project: {
                             _id: 1,
@@ -510,7 +510,7 @@ authService.getAll = async (request) => {
                             linkLogo: 1,
                             type: 1,
                             video:1,
-                            linkcategory:1,
+                            LinkCategoryId:1,
                             status: 1,
                             is_index: 1,
                             protectedLinks: 1
@@ -644,12 +644,36 @@ authService.getTokenAll = async (request) => {
                         }
                     },
                     {
+                        $lookup: {
+                            from: 'linkcategories',
+                            localField: "LinkCategoryId",
+                            foreignField: "_id",
+                            as: 'LinkCategoryId',
+                            pipeline: [
+                                {
+                                    $match: {
+                                        is_deleted: '0',
+                                        status: "active"
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        title: 1,
+                                        image: 1,
+                                        link:1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
                         $project: {
                             _id: 1,
                             linkTitle: 1,
                             linkUrl: 1,
                             linkLogo: 1,
                             video: 1,
+                            LinkCategoryId: 1,
                             type: 1,
                             status: 1,
                             is_index: 1

@@ -4,21 +4,21 @@ const subscriptionSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
-        required: true
+
     },
     stripeSubscriptionId: {
         type: String,
-        required: true
+       
     },
     planType: {
         type: String,
         enum: ['free', 'pro', 'premium'],
-        required: true
+       
     },
     billingCycle: {
         type: String,
         enum: ['monthly', 'annual'],
-        required: true
+       
     },
     subscriptionStatus: {
         type: String,
@@ -27,11 +27,11 @@ const subscriptionSchema = new mongoose.Schema({
     },
     currentPeriodStart: {
         type: Date,
-        required: true
+       
     },
     currentPeriodEnd: {
         type: Date,
-        required: true
+       
     },
     cancelAtPeriodEnd: {
         type: Boolean,
@@ -45,7 +45,7 @@ const subscriptionSchema = new mongoose.Schema({
     },
     amount: {
         type: Number,
-        required: true
+       
     },
     currency: {
         type: String,

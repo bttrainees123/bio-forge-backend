@@ -17,9 +17,11 @@ linkCategoryService.update = async (request) => {
 linkCategoryService.delete = async (request) => {
     await linkCategoryModel.findByIdAndUpdate({ _id: new mongoose.Types.ObjectId(request.query._id) }, { is_deleted: '1' });
 }
+
 linkCategoryService.getAll = async (request) => {
     const authUserId = request.auth?._id;
     const status = request.query.status;
+     const search = request?.query?.search || "";
 
     const matchStatus = {
         is_deleted: '0',
@@ -27,6 +29,9 @@ linkCategoryService.getAll = async (request) => {
     };
     if (status) {
         matchStatus.status = status;
+    }
+     if (search) {
+        matchStatus.title = { $regex: search, $options: 'i' };
     }
 
     return await linkCategoryModel.aggregate([

@@ -113,18 +113,15 @@ const handleCheckoutSessionCompleted = async (session) => {
 const handleSubscriptionCreated = async (subscription) => {
     console.log('handleSubscriptionCreated called with:', JSON.stringify(subscription, null, 2));
     
-    // Try to get userId from metadata first
     let userId = subscription.metadata?.userId;
     const customerId = subscription.customer;
 
-    // If no userId in subscription metadata, try to find user by customer ID
     const user = await userModel.findOne({ stripeCustomerId: customerId });
     if (!user) {
         console.error('User not found for subscription creation. Customer ID:', customerId);
         return;
     }
 
-    // Use the user ID from database if not in metadata
     if (!userId) {
         userId = user._id.toString();
         console.log('Retrieved userId from database:', userId);
@@ -141,7 +138,6 @@ const handleSubscriptionCreated = async (subscription) => {
         subscriptionId: subscription.id
     });
 
-    // Check if subscription already exists
     const existingSubscription = await subscriptionModel.findOne({ 
         stripeSubscriptionId: subscription.id 
     });
@@ -156,7 +152,7 @@ const handleSubscriptionCreated = async (subscription) => {
         stripeSubscriptionId: subscription.id,
         planType,
         billingCycle,
-        subscriptionStatus: subscription.status, // Use actual status from Stripe
+        subscriptionStatus: subscription.status, 
         currentPeriodStart: new Date(subscription.current_period_start * 1000),
         currentPeriodEnd: new Date(subscription.current_period_end * 1000),
         amount: subscription.items.data[0].price.unit_amount / 100,
@@ -166,7 +162,7 @@ const handleSubscriptionCreated = async (subscription) => {
     const planLimits = paymentHelper.getPlanLimits(planType);
     await userModel.findByIdAndUpdate(user._id, {
         currentPlan: planType,
-        planStatus: subscription.status, // Use actual status
+        planStatus: subscription.status, 
         subscriptionId: newSubscription._id,
         subscriberLimit: planLimits.subscriberLimit === -1 ? 999999 : planLimits.subscriberLimit,
         planStartDate: new Date(subscription.current_period_start * 1000),
@@ -178,7 +174,7 @@ const handleSubscriptionCreated = async (subscription) => {
 };
 
 const handleSubscriptionUpdated = async (subscription) => {
-    // Update subscription record
+  
     await subscriptionModel.findOneAndUpdate(
         { stripeSubscriptionId: subscription.id },
         {
@@ -189,7 +185,6 @@ const handleSubscriptionUpdated = async (subscription) => {
         }
     );
 
-    // Update user plan status
     const localSubscription = await subscriptionModel.findOne({ stripeSubscriptionId: subscription.id });
     if (localSubscription) {
         await userModel.findByIdAndUpdate(localSubscription.userId, {
@@ -225,20 +220,19 @@ const handleInvoicePaymentSucceeded = async (invoice) => {
     console.log(`Invoice payment succeeded: ${invoice.id}`);
     console.log('Invoice details:', JSON.stringify(invoice, null, 2));
 
-    // If this is the first invoice for a subscription, handle subscription creation
     if (invoice.subscription && invoice.billing_reason === 'subscription_create') {
         try {
-            // Check if we've already processed this subscription
+           
             const existingSubscription = await subscriptionModel.findOne({ 
                 stripeSubscriptionId: invoice.subscription 
             });
             
             if (!existingSubscription) {
                 console.log('First invoice for new subscription, retrieving subscription details');
-                // Retrieve the full subscription object
+                
                 const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
                 
-                // Call our subscription handler
+              
                 await handleSubscriptionCreated(subscription);
             } else {
                 console.log('Subscription already exists in DB');

@@ -23,7 +23,7 @@ const linkSchema = new mongoose.Schema({
     },
     LinkCategoryId:[{
          type: mongoose.Schema.Types.ObjectId,
-        ref: "linkcategory"
+        ref: "linkcategories"
     }],
     type: {
         type: String,
