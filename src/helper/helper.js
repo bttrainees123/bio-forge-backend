@@ -3,6 +3,7 @@ const path = require("path")
 const otpGenerator = require('otp-generator');
 const jwt = require("jsonwebtoken");
 const { mkdir } = require('node:fs/promises');
+const jetpack = require("fs-jetpack");
 const fs = require("fs");
 const helper = {}
 const saltnumber = 10
@@ -45,12 +46,11 @@ helper.getFilteredTopic = (language) => ({
         cond: { $eq: ["$$t.language", language] },
     },
 });
-const ROOT_DIR = path.resolve(); // or process.cwd()
 
 helper.moveFileFromFolder = async (filename, targetFolder) => {
     if (!filename) return null;
-    const tempDir = path.join(ROOT_DIR, "../../public/tempUploads");
-    const targetDir = path.join(ROOT_DIR, "../../public", targetFolder);
+    const tempDir = path.join(__dirname, "../../public/tempUploads");
+    const targetDir = path.join(__dirname, "../../public", targetFolder);
     const sourcePath = path.join(tempDir, filename);
     if (!fs.existsSync(sourcePath)) {
         console.log(`File not found: ${sourcePath}`);
