@@ -30,6 +30,8 @@ app.use("/images", express.static(path.join(__dirname, "/public/default")));
 app.use("/images", express.static(path.join(__dirname, "/public/themeImg")));
 app.use("/images", express.static(path.join(__dirname, "/public/linkCategory")));
 app.use("/images", express.static(path.join(__dirname, "/public/mediaType")));
+app.use("/images", express.static(path.join(__dirname, "/public/bioDataProfile")));
+app.use("/images", express.static(path.join(__dirname, "/public/bioDataBackground")));
 
 // Webhook endpoint MUST be before any other body-parsing middleware
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));

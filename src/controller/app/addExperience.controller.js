@@ -62,6 +62,15 @@ class addExperienceController {
             return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
         }
     };
+    getUserInfo = async (request, response) => {
+        try {
+            const data = await addExperienceService.getUserInfo(request);
+            return responseHelper.success(response, `addExperience fetched successfully`, data, statusCodes.OK);
+        } catch (error) {
+            console.error(error);
+            return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
+        }
+    };
 }
 
 module.exports = new addExperienceController()

@@ -39,6 +39,7 @@ adminRouter.get("/getAll-theme", userController.getTemplateList);
 //add-skills
 adminRouter.post('/addSkill',adminMiddleWare,addSkillController.add);
 adminRouter.post('/updateSkill',adminMiddleWare,addSkillController.update);
+adminRouter.get('/getAllSkill',addSkillController.getAll);
 
 
 module.exports = adminRouter

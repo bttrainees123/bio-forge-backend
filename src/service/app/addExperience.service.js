@@ -263,4 +263,115 @@ addExperienceService.getAll = async (request) => {
     }
 };
 
+addExperienceService.getUserInfo = async (request) => {
+    const userId = request?.auth?._id || request?.query?.userId;
+    const type = request?.query?.type;
+
+    // Validate required parameters
+    if (!userId) {
+        throw new Error('UserId is required');
+    }
+
+    // Fetch all experiences regardless of type
+    const matchCondition = {
+        userId: new mongoose.Types.ObjectId(userId),
+        is_deleted: '0',
+        status: 'active'
+    };
+
+    const result = await addExperienceModel.aggregate([
+        {
+            $match: matchCondition
+        },
+        {
+            $lookup: {
+                from: 'addskills',
+                localField: 'addSkills',
+                foreignField: '_id',
+                as: 'skillsInfo',
+                 pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            addSkills: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                pipeline: [
+                    {
+                        $match: {
+                            is_deleted: '0'
+                        }
+                    },
+                    {
+                        $project: {
+                            username: 1,
+                            profile_img: 1,
+                            banner_img: 1
+                        }
+                    }
+                ],
+                as: 'userInfo'
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                userInfo: { $first: '$userInfo' },
+                experiences: { $push: '$$ROOT' }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                username: { $arrayElemAt: ['$userInfo.username', 0] },
+                profile_img: { $arrayElemAt: ['$userInfo.profile_img', 0] },
+                banner_img: { $arrayElemAt: ['$userInfo.banner_img', 0] },
+                userInfo: {
+                    $map: {
+                        input: '$experiences',
+                        as: 'exp',
+                        in: {
+                            _id: '$$exp._id',
+                            type: '$$exp.type',
+                            bio_data: '$$exp.bio_data',
+                            work: '$$exp.work',
+                            education: '$$exp.education',
+                            currentCity: '$$exp.currentCity',
+                            hometown: '$$exp.hometown',
+                            relationship: '$$exp.relationship',
+                            title: '$$exp.title',
+                            employementType: '$$exp.employementType',
+                            organization: '$$exp.organization',
+                            currentlyWorking: '$$exp.currentlyWorking',
+                            startDate: '$$exp.startDate',
+                            endDate: '$$exp.endDate',
+                            latLong: '$$exp.latLong',
+                            description: '$$exp.description',
+                            profileHeadline: '$$exp.profileHeadline',
+                            addSkills: '$$exp.skillsInfo',
+                            media: '$$exp.media',
+                        }
+                    }
+                },
+                
+            }
+        },
+        {
+            $sort: {
+                'userInfo.updatedAt': -1
+            }
+        }
+    ]);
+
+    return result
+};
+
 module.exports = addExperienceService;

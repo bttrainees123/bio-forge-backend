@@ -10,6 +10,23 @@ addSkillsService.add = async (request) => {
 addSkillsService.update = async (request) => {
    return await addSkillModel.findByIdAndUpdate({ _id: new mongoose.Types.ObjectId(request.body._id) }, request.body);
 }
+addSkillsService.getAll = async ()=>{
+   const data =  await addSkillModel.aggregate([
+      {
+         $match:{
+            is_deleted:'0',
+            status:'active'
+         }
+      },
+      {
+         $project:{
+            addSkills:1
+         }
+      }
+      
+   ]);
+   return data
+}
 
 
 module.exports = addSkillsService;
