@@ -4,7 +4,7 @@ const express = require('express');
 const path = require("path")
 const cors = require("cors")
 const fileUpload = require("express-fileupload");
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const userRouter = require("./src/routes/app/user.routes")
 const adminRouter = require("./src/routes/admin/admin.routes")
