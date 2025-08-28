@@ -7,9 +7,14 @@ const bioDataSchema = new mongoose.Schema({
     },
     profileImage: {
         type: String,
+        default: "twitter.png"
     },
     backgroundImage: {
         type: String,
+        default: "abstract.jpg"
+    },
+    bio:{
+        type:String
     },
     addExperience: {
         type: mongoose.Schema.Types.ObjectId,

@@ -162,7 +162,7 @@ class experienceValidation {
                 }),
             
             relationship: Joi.string()
-                .valid('single', 'in_a_relationship', 'married', 'complicated', 'divorced', 'widowed', 'separated')
+                .valid('single', 'mingle', 'married', 'complicated', 'divorced', 'widowed', 'separated')
                 .messages({
                     "any.only": "Invalid relationship status"
                 })
@@ -210,7 +210,7 @@ class experienceValidation {
             }),
             currentCity: Joi.string().max(100),
             hometown: Joi.string().max(100),
-            relationship: Joi.string().valid('single', 'in_a_relationship', 'married', 'complicated', 'divorced', 'widowed', 'separated')
+            relationship: Joi.string().valid('single', 'mingle', 'married', 'complicated', 'divorced', 'widowed', 'separated')
         });
     }
 

@@ -75,6 +75,6 @@ userRouter.post('/add-bio-data',middleWare,bioDataController.add);
 userRouter.post('/update-bio-data',middleWare,bioDataController.update);
 // userRouter.delete('/deleteExperience',middleWare,bioDataController.delete);
 // userRouter.get('/status-Experience',middleWare,bioDataController.updateStatus);
-userRouter.get('/getAll-bio-data',middleWare,bioDataController.getAll);
+userRouter.get('/getAll-bio-data',bioDataController.getAll);
 
 module.exports=userRouter

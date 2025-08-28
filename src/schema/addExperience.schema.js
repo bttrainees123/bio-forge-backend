@@ -84,7 +84,7 @@ const addExperienceSchema = new mongoose.Schema({
     },
     relationship: {
         type:String,
-        enum: ['single', 'in_a_relationship', 'married',
+        enum: ['single', 'mingle', 'married',
             'complicated', 'divorced', 'widowed', 'separated'],
     },
     status: {

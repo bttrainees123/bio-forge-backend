@@ -88,11 +88,33 @@ bioDataService.getAll = async (request) => {
                     },
                     {
                         $project: {
-                            username: 1
+                            username: 1,
+                            email:1
                         }
                     }
                 ],
                 as: 'userInfo'
+            }
+        },
+        {
+            $lookup: {
+                from: 'addskills',
+                localField: '_id',
+                foreignField: '_id',
+                pipeline: [
+                    {
+                        $match: {
+                            is_deleted: '0'
+                        }
+                    },
+                    {
+                        $project: {
+                            username: 1,
+                            email:1
+                        }
+                    }
+                ],
+                as: 'addSkills'
             }
         },
         {
@@ -121,6 +143,7 @@ bioDataService.getAll = async (request) => {
                             description: 1,
                             profileHeadline: 1,
                             media: 1,
+                            addSkills: 1,
                             bio_data: 1,
                             work: 1,
                             currentCity: 1,
@@ -178,14 +201,14 @@ bioDataService.getAll = async (request) => {
         {
             $project: {
                 username: { $arrayElemAt: ['$userInfo.username', 0] },
+                email: { $arrayElemAt: ['$userInfo.email', 0] },
                 profileImage: 1,
                 backgroundImage: 1,
+                bio: 1,
                 addExperience: {
                     education: '$educationExperience',
                     non_education: '$nonEducationExperience'
                 },
-                createdAt: 1,
-                updatedAt: 1
             }
         },
         {
