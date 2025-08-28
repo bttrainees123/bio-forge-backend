@@ -16,7 +16,7 @@ class authController {
             if (validationError) return;
             const userData = await userModel.findOne({ username: request.body.username, is_deleted: "0" })
             if (userData) {
-                return responseHelper.Forbidden(response, "Username already exists", null, statusCodes.OK);
+                return responseHelper.Forbidden(response, "Username already exist", null, statusCodes.OK);
             } 
             if (await userModel.findOne({ email: new RegExp(`^${request.body.email}$`, 'i'), is_deleted: "0" })) {
                 return responseHelper.Forbidden(response, "Email already exists", null, statusCodes.OK);
