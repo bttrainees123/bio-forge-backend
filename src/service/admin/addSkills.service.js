@@ -1,32 +1,37 @@
 const addSkillModel = require('../../model/addSkill.model');
 const helper = require('../../helper/helper');
 const { default: mongoose } = require('mongoose');
-const addSkillsService = {}
+const skillNameService = {}
 
-addSkillsService.add = async (request) => {
+skillNameService.add = async (request) => {
    const data = await addSkillModel.create(request.body);
    return data;
 };
-addSkillsService.update = async (request) => {
+skillNameService.update = async (request) => {
    return await addSkillModel.findByIdAndUpdate({ _id: new mongoose.Types.ObjectId(request.body._id) }, request.body);
 }
-addSkillsService.getAll = async ()=>{
-   const data =  await addSkillModel.aggregate([
-      {
-         $match:{
-            is_deleted:'0',
-            status:'active'
-         }
-      },
-      {
-         $project:{
-            addSkills:1
-         }
-      }
-      
-   ]);
-   return data
+skillNameService.getAll = async (request)=>{
+     const search = request?.query?.search || '';
+        const matchStage = {
+            is_deleted: '0', 
+            status: 'active' 
+        };
+        if (search) {
+            matchStage.skillName = { $regex: search, $options: 'i' }; 
+        }
+        const data = await addSkillModel.aggregate([
+            {
+                $match: matchStage
+            },
+            {
+                $project: {
+                    skillName: 1,
+                    _id: 1,  
+                }
+            }
+        ]);
+        return data;
 }
 
 
-module.exports = addSkillsService;
+module.exports = skillNameService;

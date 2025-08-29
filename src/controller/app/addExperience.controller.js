@@ -11,7 +11,7 @@ class addExperienceController {
             const { error } = await addExperienceValidation.validateByType(request.body,);
             const validationError = responseHelper.validatIonError(response, error);
             if (validationError) return;
-            const data= await addExperienceService.add(request);
+            const data = await addExperienceService.add(request);
             return responseHelper.success(response, `Add Experience added successfully`, data, statusCodes.OK)
         } catch (error) {
             console.log(error);

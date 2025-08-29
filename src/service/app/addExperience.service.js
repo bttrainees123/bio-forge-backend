@@ -11,21 +11,20 @@ addExperienceService.add = async (request) => {
 
     body.userId = request.auth._id;
 
-    if (!type || !['education', 'non_education'].includes(type)) {
-        throw new Error('Type is required and must be either "education" or "non_education"');
+    if (!type || !['experience', 'education'].includes(type)) {
+        throw new Error('Type is required and must be either "experience" or "education"');
     }
 
     if (body.media?.fileMedia) {
         await helper.moveFileFromFolder(body.media.fileMedia, "mediaType");
     }
 
-    if (type === 'education') {
+    if (type === 'experience') {
         delete body.bio_data;
         delete body.work;
-        delete body.education;
+        delete body.experience;
         delete body.currentCity;
         delete body.hometown;
-        delete body.relationship;
 
         if (body.startDate && body.endDate && !body.currentlyWorking) {
             if (new Date(body.startDate) > new Date(body.endDate)) {
@@ -37,7 +36,7 @@ addExperienceService.add = async (request) => {
             delete body.endDate;
         }
 
-    } else if (type === 'non_education') {
+    } else if (type === 'education') {
         delete body.title;
         delete body.employementType;
         delete body.organization;
@@ -52,7 +51,7 @@ addExperienceService.add = async (request) => {
 
         const existingRecord = await addExperienceModel.findOne({
             userId: new mongoose.Types.ObjectId(body.userId),
-            type: 'non_education',
+            type: 'education',
             is_deleted: '0'
         });
 
@@ -65,20 +64,10 @@ addExperienceService.add = async (request) => {
 addExperienceService.update = async (request) => {
     const { body } = request;
     const { _id: experienceId, media } = body;
-
-    if (!experienceId) {
-        throw new Error('Experience ID is required');
-    }
-
     const experienceData = await addExperienceModel.findOne({
         _id: new mongoose.Types.ObjectId(experienceId),
         is_deleted: '0',
     });
-
-    if (!experienceData) {
-        throw new Error('Experience record not found');
-    }
-
     if (media?.fileMedia) {
         const oldImage = experienceData.media?.fileMedia || '';
         const newImage = media.fileMedia;
@@ -99,9 +88,8 @@ addExperienceService.update = async (request) => {
             body.media = { fileMedia: newImage };
         }
     }
-
-    if (experienceData.type === 'education') {
-        ['bio_data', 'work', 'education', 'currentCity', 'hometown', 'relationship'].forEach(
+    if (experienceData.type === 'experience') {
+        ['bio_data', 'work', 'education', 'currentCity', 'hometown'].forEach(
             field => delete body[field]
         );
 
@@ -113,7 +101,7 @@ addExperienceService.update = async (request) => {
         if (body.currentlyWorking) {
             delete body.endDate;
         }
-    } else if (experienceData.type === 'non_education') {
+    } else if (experienceData.type === 'education') {
         [
             'title', 'employementType', 'organization', 'currentlyWorking',
             'startDate', 'endDate', 'latLong', 'description',
@@ -167,8 +155,8 @@ addExperienceService.getAll = async (request) => {
         throw new Error('UserId is required');
     }
 
-    if (!type || !['education', 'non_education'].includes(type)) {
-        throw new Error('Type is required and must be either "education" or "non_education"');
+    if (!type || !['experience', 'education'].includes(type)) {
+        throw new Error('Type is required and must be either "experience" or "education"');
     }
 
     const matchCondition = {
@@ -178,7 +166,7 @@ addExperienceService.getAll = async (request) => {
         status: 'active'
     };
 
-    if (type === 'education') {
+    if (type === 'experience') {
         return await addExperienceModel.aggregate([
             {
                 $match: matchCondition
@@ -216,7 +204,7 @@ addExperienceService.getAll = async (request) => {
             }
         ]);
 
-    } else if (type === 'non_education') {
+    } else if (type === 'education') {
         return await addExperienceModel.aggregate([
             {
                 $match: matchCondition
@@ -249,7 +237,6 @@ addExperienceService.getAll = async (request) => {
                     education: 1,
                     currentCity: 1,
                     hometown: 1,
-                    relationship: 1,
                     createdAt: 1,
                     updatedAt: 1
                 }
@@ -289,7 +276,7 @@ addExperienceService.getUserInfo = async (request) => {
                 localField: 'addSkills',
                 foreignField: '_id',
                 as: 'skillsInfo',
-                 pipeline: [
+                pipeline: [
                     {
                         $project: {
                             _id: 1,
@@ -346,7 +333,6 @@ addExperienceService.getUserInfo = async (request) => {
                             education: '$$exp.education',
                             currentCity: '$$exp.currentCity',
                             hometown: '$$exp.hometown',
-                            relationship: '$$exp.relationship',
                             title: '$$exp.title',
                             employementType: '$$exp.employementType',
                             organization: '$$exp.organization',
@@ -361,7 +347,7 @@ addExperienceService.getUserInfo = async (request) => {
                         }
                     }
                 },
-                
+
             }
         },
         {
