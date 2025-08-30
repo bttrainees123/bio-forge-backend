@@ -6,8 +6,6 @@ const emailTemplateImage = require("../../config/template");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-const { type } = require("os");
-const { status } = require("../admin/user.service");
 const templateModel = require("../../model/theme.model");
 
 const authService = {}
@@ -701,7 +699,6 @@ authService.getTokenAll = async (request) => {
     ]);
 };
 authService.getAllUser = async (request) => {
-    const search = request?.query?.search || "";
     const page = Number(request?.query?.page) || 1;
     const limit = Number(request?.query?.limit) || 10;
     const skip = (page - 1) * limit;

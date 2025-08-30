@@ -10,7 +10,7 @@ class reportController {
 
     add = async (request, response) => {
         try {
-            const { reportedUserId, reportedByUserId, message } = request.body;
+            const { reportedUserId,  message } = request.body;
             const authUserId = String(request.auth._id);
             if (!message || message.trim().length === 0) {
                 return responseHelper.BadRequest(response, "Message is required.", null,statusCodes.OK);
@@ -19,15 +19,9 @@ class reportController {
                 return responseHelper.BadRequest(response, "You cannot report yourself.", null,statusCodes.OK);
             }
             const queryConditions = {
-                reportedByUserId : new mongoose.Types.ObjectId(authUserId),
                 message: message.trim(),
                 is_deleted: { $ne: '1' }
             };
-            if (reportedUserId) {
-                queryConditions.reportedUserId = new mongoose.Types.ObjectId(reportedUserId);
-            } else {
-                queryConditions.reportedUserId = null;
-            }
             const existingReport = await reportModel.findOne(queryConditions);
             if (existingReport) {
                 return responseHelper.BadRequest(response, "You have already reported this user with the same message.", null,statusCodes.OK);
@@ -41,7 +35,7 @@ class reportController {
                     return responseHelper.BadRequest(response, "Cannot report a deleted user.", null,statusCodes.OK);
                 }
             }
-            const result = await reportService.reportUser(request);
+            await reportService.reportUser(request);
             return responseHelper.success(response, `Report submitted successfully`, null, statusCodes.OK);
         } catch (error) {
             console.error(error);

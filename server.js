@@ -4,7 +4,7 @@ const express = require('express');
 const path = require("path")
 const cors = require("cors")
 const fileUpload = require("express-fileupload");
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const userRouter = require("./src/routes/app/user.routes")
 const adminRouter = require("./src/routes/admin/admin.routes")
@@ -29,6 +29,9 @@ app.use("/images", express.static(path.join(__dirname, "/public/tempUploads")));
 app.use("/images", express.static(path.join(__dirname, "/public/default")));
 app.use("/images", express.static(path.join(__dirname, "/public/themeImg")));
 app.use("/images", express.static(path.join(__dirname, "/public/linkCategory")));
+app.use("/images", express.static(path.join(__dirname, "/public/mediaType")));
+app.use("/images", express.static(path.join(__dirname, "/public/bioDataProfile")));
+app.use("/images", express.static(path.join(__dirname, "/public/bioDataBackground")));
 
 // Webhook endpoint MUST be before any other body-parsing middleware
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
@@ -45,7 +48,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use("/api/v1", userRouter);
 app.use("/api/admin/v1", adminRouter);
 app.use("/api/upload", imageRouter);
-app.use("/api/payment", paymentRouter); // New payment routes
+app.use("/api/payment", paymentRouter); 
 
 app.use((request, response) => {
   response.status(404).json({

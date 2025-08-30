@@ -3,7 +3,6 @@ const responseHelper = require('../../helper/response');
 const statusCodes = require('../../helper/statusCodes');
 const { default: mongoose } = require('mongoose');
 const linkCategoryModel = require('../../model/linkCategory.model');
-const linkCategoryValidation = require('../../validation/app/linkCategory.validation');
 
 class linkCategoryController {
     add = async (request, response) => {
@@ -11,7 +10,7 @@ class linkCategoryController {
             // const { error } = await linkCategoryValidation.validateAddlinkCategory(request.body,);
             // const validationError = responseHelper.validatIonError(response, error);
             // if (validationError) return;
-            const data = await linkCategoryService.add(request);
+            await linkCategoryService.add(request);
             return responseHelper.success(response, `linkCategory added successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
@@ -24,7 +23,7 @@ class linkCategoryController {
             // const { error } = await linkCategoryValidation.validateUpdatelinkCategory(request.body,);
             // const validationError = responseHelper.validatIonError(response, error);
             // if (validationError) return;
-            const data = await linkCategoryService.update(request);
+            await linkCategoryService.update(request);
             return responseHelper.success(response, `linkCategory updated successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
@@ -37,7 +36,7 @@ class linkCategoryController {
             if (!linkCategoryData) {
                 return responseHelper.Forbidden(response, `linkCategory not found`, null, statusCodes.OK)
             }
-            const data = await linkCategoryService.delete(request);
+            await linkCategoryService.delete(request);
             return responseHelper.success(response, `linkCategory deleted successfully`, null, statusCodes.OK);
         } catch (error) {
             console.log(error);

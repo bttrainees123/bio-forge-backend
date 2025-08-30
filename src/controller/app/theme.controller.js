@@ -3,14 +3,13 @@ const { default: mongoose } = require("mongoose");
 const statusCodes = require('../../helper/statusCodes');
 const responseHelper = require('../../helper/response');
 const themeModel = require('../../model/theme.model');
-const themeValidation = require('../../validation/app/theme.validation');
 class themeController {
     add = async (request, response) => {
         try {
             // const { error } = await themeValidation.validateAddtheme(request.body,);
             // const validationError = responseHelper.validatIonError(response, error);
             // if (validationError) return;
-            const data = await themeService.add(request);
+            await themeService.add(request);
             return responseHelper.success(response, `theme added successfully`, null, statusCodes.CREATED);
         } catch (error) {
             console.error(error);

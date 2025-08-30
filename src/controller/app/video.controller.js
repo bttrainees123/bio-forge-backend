@@ -3,7 +3,6 @@ const responseHelper = require('../../helper/response');
 const statusCodes = require('../../helper/statusCodes');
 const { default: mongoose } = require('mongoose');
 const videoModel = require('../../model/video.model');
-const videoValidation = require('../../validation/app/video.validation');
 
 class videoController {
     add = async (request, response) => {
@@ -11,7 +10,7 @@ class videoController {
             // const { error } = await videoValidation.validateAddvideo(request.body,);
             // const validationError = responseHelper.validatIonError(response, error);
             // if (validationError) return;
-            const data = await videoService.add(request);
+            await videoService.add(request);
             return responseHelper.success(response, `video added successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
@@ -24,7 +23,7 @@ class videoController {
             // const { error } = await videoValidation.validateUpdatevideo(request.body,);
             // const validationError = responseHelper.validatIonError(response, error);
             // if (validationError) return;
-            const data = await videoService.update(request);
+            await videoService.update(request);
             return responseHelper.success(response, `video updated successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
@@ -37,7 +36,7 @@ class videoController {
             if (!videoData) {
                 return responseHelper.Forbidden(response, `video not found`, null, statusCodes.OK)
             }
-            const data = await videoService.delete(request);
+            await videoService.delete(request);
             return responseHelper.success(response, `video deleted successfully`, null, statusCodes.OK);
         } catch (error) {
             console.log(error);

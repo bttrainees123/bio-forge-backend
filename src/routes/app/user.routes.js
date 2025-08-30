@@ -8,6 +8,8 @@ const themeController = require('../../controller/app/theme.controller');
 const videoController = require('../../controller/app/video.controller');
 const subscribeController = require('../../controller/app/subscribe.controller');
 const linkCategoryController = require('../../controller/app/linkCategory.controller');
+const addExperienceController = require('../../controller/app/addExperience.controller');
+const bioDataController = require('../../controller/app/bioData.controller');
 
 userRouter.post("/register",authController.register);
 userRouter.post("/login",authController.login);
@@ -60,5 +62,19 @@ userRouter.get('/status-linkCategory',middleWare,linkCategoryController.status);
 //subscribe
 userRouter.post('/add-subscribe',subscribeController.add);
 userRouter.get('/getAll-subscribe',middleWare,subscribeController.getAll);
-//subscription
+//addExperience
+userRouter.post('/addExperience',middleWare,addExperienceController.add);
+userRouter.post('/updateExperience',middleWare,addExperienceController.update);
+userRouter.delete('/deleteExperience',middleWare,addExperienceController.delete);
+userRouter.get('/status-Experience',middleWare,addExperienceController.updateStatus);
+userRouter.get('/getAll-Experience',middleWare,addExperienceController.getAll);
+userRouter.get('/getUserInfo-Experience',middleWare,addExperienceController.getUserInfo);
+
+//add-bio-data
+userRouter.post('/add-bio-data',middleWare,bioDataController.add);
+userRouter.post('/update-bio-data',middleWare,bioDataController.update);
+// userRouter.delete('/deleteExperience',middleWare,bioDataController.delete);
+// userRouter.get('/status-Experience',middleWare,bioDataController.updateStatus);
+userRouter.get('/getAll-bio-data',bioDataController.getAll);
+
 module.exports=userRouter

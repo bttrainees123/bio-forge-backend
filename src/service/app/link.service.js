@@ -3,15 +3,9 @@ const { default: mongoose } = require("mongoose");
 const helper = require('../../helper/helper');
 const fs = require('fs');
 const path = require('path');
-const { type } = require('os');
-const addLinksValidation = require('../../validation/app/addlink.validation');
-const { time } = require('console');
 const userModel = require('../../model/user.model');
 const {
-    NotFoundError,
-    BadRequestError,
-    ConflictError,
-    ValidationError, ForbiddenError
+     ForbiddenError
 } = require('../../helper/customeErrors');
 
 const linkService = {}
@@ -81,7 +75,15 @@ linkService.update = async (request) => {
             { _id: new mongoose.Types.ObjectId(request?.body?._id) },
             { $unset: { videoId: "" }, $set: updateData }
         );
-    } else {
+    } 
+    if (!Object.prototype.hasOwnProperty.call(request.body, "LinkCategoryId")) {
+        await linkModel.updateOne(
+            { _id: new mongoose.Types.ObjectId(request?.body?._id) },
+            { $unset: { LinkCategoryId: "" }, $set: updateData }
+        );
+    } 
+    
+    else {
         await linkModel.updateOne(
             { _id: new mongoose.Types.ObjectId(request?.body?._id) },
             { $set: updateData }

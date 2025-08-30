@@ -1,7 +1,6 @@
 const cron = require('node-cron');
 const reportModel = require('../../model/report.model');
 const userModel = require('../../model/user.model');
-const mongoose = require('mongoose');
 
 class UserReportCronService {
     
