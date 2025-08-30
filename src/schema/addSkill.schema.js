@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const addSkillSchema = new mongoose.Schema({
-    addSkills: {
+    skillName: {
         type: String,
     },
     status: {

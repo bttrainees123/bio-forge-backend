@@ -7,7 +7,7 @@ const addExperienceSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['education', 'non_education'],
+        enum: ['experience', 'education'],
     },
 
     ////////////// experience fields /////////////
@@ -44,9 +44,9 @@ const addExperienceSchema = new mongoose.Schema({
     profileHeadline: {
         type: String,
     },
-    addSkills: [{
+    skillName: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'addSkills',
+        ref: 'skills',
     }],
     media: {
         linkMedia: {
@@ -58,12 +58,12 @@ const addExperienceSchema = new mongoose.Schema({
     },
 
     /////////////  other fields /////////////
-   
+
     bio_data: {
         type: String,
     },
     work: {
-         type:String,
+        type: String,
         enum: ['business_man', 'freenlancer', 'student', 'job_seeker', 'other'],
     },
     education: {
@@ -81,11 +81,6 @@ const addExperienceSchema = new mongoose.Schema({
     },
     hometown: {
         type: String,
-    },
-    relationship: {
-        type:String,
-        enum: ['single', 'mingle', 'married',
-            'complicated', 'divorced', 'widowed', 'separated'],
     },
     status: {
         type: String,

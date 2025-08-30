@@ -8,11 +8,11 @@ class experienceValidation {
     static educationExperience() {
         return Joi.object({
             type: Joi.string()
-                .valid('education')
+                .valid('experience')
                 .required()
                 .messages({
                     "any.required": "Type is required",
-                    "any.only": "Type must be 'education'"
+                    "any.only": "Type must be 'experience'"
                 }),
             
             title: Joi.string()
@@ -115,11 +115,11 @@ class experienceValidation {
     static nonEducationExperience() {
         return Joi.object({
             type: Joi.string()
-                .valid('non_education')
+                .valid('education')
                 .required()
                 .messages({
                     "any.required": "Type is required",
-                    "any.only": "Type must be 'non_education'"
+                    "any.only": "Type must be 'education'"
                 }),
             
             bio_data: Joi.string()
@@ -161,14 +161,10 @@ class experienceValidation {
                     "string.max": "Hometown must not exceed 100 characters"
                 }),
             
-            relationship: Joi.string()
-                .valid('single', 'mingle', 'married', 'complicated', 'divorced', 'widowed', 'separated')
-                .messages({
-                    "any.only": "Invalid relationship status"
-                })
-        }).or('bio_data', 'work', 'education', 'currentCity', 'hometown', 'relationship')
+           
+        }).or('bio_data', 'work', 'education', 'currentCity', 'hometown', )
         .messages({
-            "object.missing": "At least one field is required: bio_data, work, education, currentCity, hometown, or relationship"
+            "object.missing": "At least one field is required: bio_data, work, education, currentCity, hometown"
         });
     }
 
@@ -185,7 +181,7 @@ class experienceValidation {
                     "string.pattern.base": "Invalid Experience ID format. Must be a valid MongoDB ObjectId"
                 }),
             
-            // Allow both education and non-education fields, validation will be done in service based on existing type
+            // Allow both experience and non-education fields, validation will be done in service based on existing type
             title: Joi.string().min(2).max(100),
             employementType: Joi.string().valid('Full-time', 'part-time', 'student', 'freelancer', 'trainee', 'intership', 'self-employee'),
             organization: Joi.string().min(2).max(100),
@@ -210,7 +206,6 @@ class experienceValidation {
             }),
             currentCity: Joi.string().max(100),
             hometown: Joi.string().max(100),
-            relationship: Joi.string().valid('single', 'mingle', 'married', 'complicated', 'divorced', 'widowed', 'separated')
         });
     }
 
@@ -261,14 +256,14 @@ class experienceValidation {
      * Dynamic validation based on type
      */
     static validateByType(data) {
-        if (data.type === 'education') {
+        if (data.type === 'experience') {
             return this.validateAddEducation(data);
-        } else if (data.type === 'non_education') {
+        } else if (data.type === 'education') {
             return this.validateAddNonEducation(data);
         } else {
             return {
                 error: {
-                    details: [{ message: 'Type must be either "education" or "non_education"' }]
+                    details: [{ message: 'Type must be either "experience" or "education"' }]
                 }
             };
         }

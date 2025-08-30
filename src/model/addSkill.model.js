@@ -1,4 +1,4 @@
 const mongoose = require('mongoose');
-const addSkillSchema = require("../schema/addSkill.schema");
-const addSkillModel = mongoose.model('addSkills',addSkillSchema);
-module.exports = addSkillModel;
+const skillNameSchema = require("../schema/addSkill.schema");
+const skillNameModel = mongoose.model('skills',skillNameSchema);
+module.exports = skillNameModel;

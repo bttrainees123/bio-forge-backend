@@ -13,12 +13,24 @@ const bioDataSchema = new mongoose.Schema({
         type: String,
         default: "abstract.jpg"
     },
-    bio:{
-        type:String
+    bio: {
+        type: String
     },
-    addExperience: {
+    experienceInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'addexperiences',
+        ref: 'educationalinformations',
+    },
+    interests: [{
+        type: String
+    }],
+    skills: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'skills'
+    }],
+    relationship: {
+        type: String,
+        enum: ['single', 'mingle', 'married',
+            'complicated', 'divorced', 'widowed', 'separated'],
     },
     status: {
         type: String,
