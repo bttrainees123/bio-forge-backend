@@ -65,14 +65,15 @@ userRouter.get('/getAll-subscribe', middleWare, subscribeController.getAll);
 //addExperience
 userRouter.post('/addExperience', middleWare, addExperienceController.add);
 userRouter.post('/updateExperience', middleWare, addExperienceController.update);
-userRouter.delete('/deleteExperience', middleWare, addExperienceController.delete);
+userRouter.delete('/deleteExperience', middleWare,
+    addExperienceController.delete);
 userRouter.get('/status-Experience', middleWare, addExperienceController.updateStatus);
 userRouter.get('/getAll-Experience', middleWare, addExperienceController.getAll);
 userRouter.get('/getUserInfo-Experience', middleWare, addExperienceController.getUserInfo);
 
 //add-bio-data
 userRouter.post('/add-bio-data', middleWare, bioDataController.add);
-userRouter.post('/update-bio-data', middleWare, bioDataController.update);
+userRouter.post('/updateBioData', middleWare, bioDataController.update);
 // userRouter.delete('/deleteExperience',middleWare,bioDataController.delete);
 // userRouter.get('/status-Experience',middleWare,bioDataController.updateStatus);
 userRouter.get('/getAll-bio-data', bioDataController.getAll);

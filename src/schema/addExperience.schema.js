@@ -69,12 +69,50 @@ const addExperienceSchema = new mongoose.Schema({
     education: {
         AddHighighSchool: {
             type: String,
-            enum: ['HighSchoolA', 'HighSchoolB', 'HighSchoolC'],
+            enum: ['Delhi Public School',
+                'Kendriya Vidyalaya',
+                'La Martiniere',
+                'DAV Public School',
+                'Loreto Convent'],
         },
         AddCollege: {
             type: String,
-            enum: ['CollegeX', 'CollegeY', 'CollegeZ'],
+            enum: ["Harrow English School",
+                'Hansraj College',
+                'Hindu College',
+                'Presidency College',
+                'Loyola College'],
         },
+        AddUnderGraduate: {
+            type: String,
+            enum: [
+                'University of Delhi',
+                'Banaras Hindu University',
+                'Jadavpur University',
+                'Christ University',
+                'Fergusson College'
+            ],
+        },
+        AddPostGraduate: {
+            type: String,
+            enum: [
+                'Jawaharlal Nehru University',
+                'Indian Institute of Science',
+                'Tata Institute of Social Sciences',
+                'Jamia Millia Islamia',
+                'Savitribai Phule Pune University'
+            ],
+        },
+        AddDoctoral: {
+            type: String,
+            enum: [
+                'IIT Bombay',
+                'IIT Delhi',
+                'AIIMS Delhi',
+                'Indian Statistical Institute',
+                'National Institute of Mental Health and Neurosciences (NIMHANS)'
+            ],
+        }
     },
     currentCity: {
         type: String,
