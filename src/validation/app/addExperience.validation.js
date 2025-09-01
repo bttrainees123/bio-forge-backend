@@ -55,6 +55,7 @@ class experienceValidation {
 
             endDate: Joi.date()
                 .iso()
+                .optional()
                 .when('currentlyWorking', {
                     is: false,
                     then: Joi.date().min(Joi.ref('startDate')),
