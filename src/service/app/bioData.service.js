@@ -120,6 +120,166 @@ bioDataService.getAll = async (request) => {
                     {
                         $match: {
                             is_deleted: '0',
+                            // status: 'active',
+                            type: 'experience'
+                        }
+                    },
+                    {
+                        $project: {
+                            title: 1,
+                            employementType: 1,
+                            organization: 1,
+                            currentlyWorking: 1,
+                            startDate: 1,
+                            type: 1,
+                            endDate: 1,
+                            latLong: 1,
+                            description: 1,
+                            profileHeadline: 1,
+                            media: 1,
+                            bio_data: 1,
+                            work: 1,
+                            currentCity: 1,
+                            hometown: 1,
+                            relationship: 1,
+                            education: 1,
+                            createdAt: 1,
+                            updatedAt: 1,
+                            status: 1,
+                        }
+                    }
+                ],
+                as: 'educationExperience'
+            }
+        },
+        {
+            $lookup: {
+                from: 'educationalinformations',
+                localField: 'userId',
+                foreignField: 'userId',
+                pipeline: [
+                    {
+                        $match: {
+                            is_deleted: '0',
+                            // status: 'active',
+                            type: 'education'
+                        }
+                    },
+                    {
+                        $project: {
+                            title: 1,
+                            employementType: 1,
+                            organization: 1,
+                            currentlyWorking: 1,
+                            startDate: 1,
+                            type: 1,
+                            endDate: 1,
+                            latLong: 1,
+                            description: 1,
+                            profileHeadline: 1,
+                            media: 1,
+                            bio_data: 1,
+                            work: 1,
+                            currentCity: 1,
+                            hometown: 1,
+                            relationship: 1,
+                            education: 1,
+                            createdAt: 1,
+                            updatedAt: 1,
+                            status: 1,
+                        }
+                    }
+                ],
+                as: 'nonEducationExperience'
+            }
+        },
+        {
+            $lookup: {
+                from: 'skills',
+                localField: 'skills',
+                foreignField: '_id',
+                pipeline: [
+                    {
+                        $match: {
+                            is_deleted: '0'
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            skillName: 1
+                        }
+                    }
+                ],
+                as: 'skills'
+            }
+        },
+        {
+            $project: {
+                username: { $arrayElemAt: ['$userInfo.username', 0] },
+                email: { $arrayElemAt: ['$userInfo.email', 0] },
+                profileImage: 1,
+                backgroundImage: 1,
+                bio: 1,
+                skills: 1,
+                relationship: 1,
+                interests: 1,
+                experienceInfo: {
+                    experience: '$educationExperience',
+                    education: '$nonEducationExperience'
+                },
+            }
+        },
+        {
+            $sort: {
+                updatedAt: -1
+            }
+        }
+    ]);
+};
+bioDataService.getAllBio = async (request) => {
+    const userId = request?.auth?._id || request?.query?.userId;
+    const matchCondition = {
+        userId: new mongoose.Types.ObjectId(userId),
+        is_deleted: '0',
+        status: 'active'
+    };
+
+    return await bioDataModel.aggregate([
+        {
+            $match: matchCondition
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                pipeline: [
+                    {
+                        $match: {
+                            is_deleted: '0'
+                        }
+                    },
+                    {
+                        $project: {
+                            username: 1,
+                            email: 1
+                        }
+                    }
+                ],
+                as: 'userInfo'
+            }
+        },
+
+        {
+            $lookup: {
+                from: 'educationalinformations',
+                localField: 'userId',
+                foreignField: 'userId',
+                pipeline: [
+                    {
+                        $match: {
+                            is_deleted: '0',
                             status: 'active',
                             type: 'experience'
                         }

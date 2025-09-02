@@ -40,6 +40,15 @@ class bioDataController {
             return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
         }
     };
+    getAllBio = async (request, response) => {
+        try {
+            const data = await bioDataService.getAllBio(request);
+            return responseHelper.success(response, `bioData fetched successfully`, data, statusCodes.OK);
+        } catch (error) {
+            console.error(error);
+            return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
+        }
+    };
  
 }
 

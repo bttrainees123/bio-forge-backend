@@ -65,9 +65,8 @@ userRouter.get('/getAll-subscribe', middleWare, subscribeController.getAll);
 //addExperience
 userRouter.post('/addExperience', middleWare, addExperienceController.add);
 userRouter.post('/updateExperience', middleWare, addExperienceController.update);
-userRouter.delete('/deleteExperience', middleWare,
-    addExperienceController.delete);
-userRouter.get('/status-Experience', middleWare, addExperienceController.updateStatus);
+userRouter.delete('/deleteExperience', middleWare,addExperienceController.delete);
+userRouter.get('/statusExperience', middleWare, addExperienceController.updateStatus);
 userRouter.get('/getAll-Experience', middleWare, addExperienceController.getAll);
 userRouter.get('/getUserInfo-Experience', middleWare, addExperienceController.getUserInfo);
 
@@ -77,5 +76,6 @@ userRouter.post('/updateBioData', middleWare, bioDataController.update);
 // userRouter.delete('/deleteExperience',middleWare,bioDataController.delete);
 // userRouter.get('/status-Experience',middleWare,bioDataController.updateStatus);
 userRouter.get('/getAll-bio-data', bioDataController.getAll);
+userRouter.get('/getAllBio', bioDataController.getAllBio);
 
 module.exports = userRouter

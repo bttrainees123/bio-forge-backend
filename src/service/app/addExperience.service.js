@@ -163,7 +163,7 @@ addExperienceService.getAll = async (request) => {
         userId: new mongoose.Types.ObjectId(userId),
         type: type,
         is_deleted: '0',
-        status: 'active'
+        // status: 'active'
     };
 
     if (type === 'experience') {
@@ -194,7 +194,8 @@ addExperienceService.getAll = async (request) => {
                     addSkills: '$skillsInfo',
                     media: 1,
                     createdAt: 1,
-                    updatedAt: 1
+                    updatedAt: 1,
+                    status:1
                 }
             },
             {
@@ -234,11 +235,13 @@ addExperienceService.getAll = async (request) => {
                     username: { $arrayElemAt: ['$userInfo.username', 0] },
                     bio_data: 1,
                     work: 1,
+                    type: 1,
                     education: 1,
                     currentCity: 1,
                     hometown: 1,
                     createdAt: 1,
-                    updatedAt: 1
+                    updatedAt: 1,
+                    status:1
                 }
             },
             {
