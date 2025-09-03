@@ -64,7 +64,7 @@ const addExperienceSchema = new mongoose.Schema({
     },
     work: {
         type: String,
-        enum: ['business_man', 'freenlancer', 'student', 'job_seeker', 'other'],
+        enum: ['business man', 'freenlancer', 'student', 'job seeker', 'other'],
     },
     education: {
         AddHighighSchool: {

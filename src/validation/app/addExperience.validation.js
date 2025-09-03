@@ -130,7 +130,7 @@ class experienceValidation {
                 }),
 
             work: Joi.string()
-                .valid('business_man', 'freenlancer', 'student', 'job_seeker', 'other')
+                .valid('business man', 'freenlancer', 'student', 'job seeker', 'other')
                 .messages({
                     "any.only": "Invalid work type"
                 }),
@@ -241,7 +241,7 @@ class experienceValidation {
                 fileMedia: Joi.string()
             }),
             bio_data: Joi.string().max(1000),
-            work: Joi.string().valid('business_man', 'freenlancer', 'student', 'job_seeker', 'other'),
+            work: Joi.string().valid('business man', 'freenlancer', 'student', 'job seeker', 'other'),
             education: Joi.object({
                 AddHighighSchool: Joi.string().valid(
                     'Delhi Public School',
