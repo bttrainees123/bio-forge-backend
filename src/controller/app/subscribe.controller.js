@@ -1,8 +1,6 @@
 const subscribeService = require('../../service/app/subscribe.service');
 const responseHelper = require('../../helper/response');
 const statusCodes = require('../../helper/statusCodes');
-const { default: mongoose } = require('mongoose');
-const subscribeModel = require('../../model/subscribe.model');
 const subscribeValidation = require('../../validation/app/subscribe.validation');
 
 class subscribeController {
@@ -15,7 +13,7 @@ class subscribeController {
             if(data === 'existingSubscription'){
                 return responseHelper.error(response, `you already subscribed this user`,statusCodes.OK)
             }
-            return responseHelper.success(response, `subscribe added successfully`, null, statusCodes.OK)
+            return responseHelper.success(response, `you subscribe`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
             return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);

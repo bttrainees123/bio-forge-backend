@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const userModel = require("../model/user.model");
 const helper = require("../helper/helper");
+require('dotenv').config();
 const url = process.env.MONGODB_URL;
 const dbName = process.env.MONGODB_NAME;
 const connectDB = async () => {

@@ -3,9 +3,8 @@ const userModel = require('../../model/user.model');
 const mongoose = require('mongoose');
 const { 
     NotFoundError, 
-    BadRequestError, 
     ConflictError,
-    ValidationError,ForbiddenError
+    ValidationError
 } = require('../../helper/customeErrors');
 
 const reportService = {};

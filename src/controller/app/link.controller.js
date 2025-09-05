@@ -3,8 +3,6 @@ const statusCodes = require("../../helper/statusCodes");
 const responseHelper = require("../../helper/response");
 const linkModel = require('../../model/link.model');
 const { default: mongoose } = require('mongoose');
-const userModel = require('../../model/user.model');
-const addLinksValidation = require('../../validation/app/addlink.validation')
 class linksController {
 
     add = async (request, response) => {
@@ -21,7 +19,7 @@ class linksController {
     };
     update = async (request, response) => {
         try {
-            const data = await linkService.update(request);
+            await linkService.update(request);
             return responseHelper.success(response, `link updated successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
@@ -34,7 +32,7 @@ class linksController {
             if (!linkData) {
                 return responseHelper.Forbidden(response, `link not found`, null, statusCodes.OK)
             }
-            const data = await linkService.delete(request);
+            await linkService.delete(request);
             return responseHelper.success(response, `link deleted successfully`, null, statusCodes.OK);
         } catch (error) {
             console.log(error);
@@ -43,7 +41,7 @@ class linksController {
     }
     updateStatus = async (request, response) => {
         try {
-            const data = await linkService.updateStatus(request);
+            await linkService.updateStatus(request);
             return responseHelper.success(response, `link status updated successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);
@@ -65,7 +63,7 @@ class linksController {
             // if(!linkData){
             //     return responseHelper.Forbidden(response, `link not found`, null, statusCodes.OK)
             // }
-            const data = await linkService.updateIndex(request);
+            await linkService.updateIndex(request);
             return responseHelper.success(response, `link index updated successfully`, null, statusCodes.OK)
         } catch (error) {
             console.log(error);

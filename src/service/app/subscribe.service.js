@@ -1,5 +1,4 @@
 const subscribeModel = require('../../model/subscribe.model');
-const helper = require('../../helper/helper');
 const { default: mongoose } = require('mongoose');
 const subscribeService = {}
 subscribeService.add = async (request) => {

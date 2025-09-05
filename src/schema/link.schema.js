@@ -17,12 +17,12 @@ const linkSchema = new mongoose.Schema({
         type: String,
 
     },
-    videoId:{
-         type: mongoose.Schema.Types.ObjectId,
+    videoId: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: "videos"
     },
-    LinkCategoryId:[{
-         type: mongoose.Schema.Types.ObjectId,
+    LinkCategoryId: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: "linkcategories"
     }],
     type: {

@@ -1,12 +1,10 @@
 const responseHelper = require("../../helper/response");
-const userService = require("../../service/admin/user.service")
-const authService = require("../../service/app/auth.service")
-const userValidation = require("../../validation/admin/user.validation")
-const statusCodes = require("../../helper/statusCodes")
+const userService = require("../../service/admin/user.service");
+const userValidation = require("../../validation/admin/user.validation");
+const statusCodes = require("../../helper/statusCodes");
 const userModel = require("../../model/user.model");
 const { default: mongoose } = require("mongoose");
 const themeModel = require("../../model/theme.model");
-const templateService = require("../../service/app/theme.service");
 class userController {
     add = async (request, response) => {
         try {

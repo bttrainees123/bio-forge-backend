@@ -83,7 +83,7 @@ userService.templateStatus = async (request) => {
     }
 }
 
-userService.dashboard = async (request) => {
+userService.dashboard = async () => {
     const [userStats, themeCount] = await Promise.all([
         userModel.aggregate([
             {

@@ -6,7 +6,6 @@ const authService = require("../../service/app/auth.service");
 const authValidation = require("../../validation/app/auth.validation");
 const optModel = require("../../model/otp.model");
 const moment = require("moment");
-const { default: mongoose } = require("mongoose");
 class authController {
     register = async (request, response) => {
         try {

@@ -1,4 +1,3 @@
-const helper = require("../../helper/helper");
 const imageService=require("../../service/upload/image.service")
 const imageValidation = require("../../validation/upload/image.validation")
 const statusCodes=require("../../helper/statusCodes")

@@ -53,7 +53,7 @@ themeService.delete = async (request) => {
     }
     await themeModel.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(request?.query?._id) });
 };
-themeService.getAll = async (request) => {
+themeService.getAll = async () => {
     return await themeModel.aggregate([
         {
             $match: {

@@ -18,7 +18,7 @@ helper.compareprotectedLinksPassword = function (candidate) {
     return bcrypt.compare(candidate, this.protectedLinksPassword);
 };
 helper.generateTokken = (Data) => {
-    return jwt.sign(Data, secretkey, { expiresIn: "24h" })
+    return jwt.sign(Data, secretkey,)
 }
 helper.otp = () => {
     const response = otpGenerator.generate(6, {
