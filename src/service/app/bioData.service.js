@@ -78,18 +78,18 @@ bioDataService.update = async (request) => {
     return;
 }
 bioDataService.getAll = async (request) => {
-    const userId = request?.auth?._id || request?.query?.userId;
-    const matchCondition = {
-        userId: new mongoose.Types.ObjectId(userId),
-        is_deleted: '0',
-        status: 'active'
-    };
+   const username = request?.query?.username;
+    // const matchCondition = {
+    //     username: new mongoose.Types.ObjectId(username),
+    //     is_deleted: '0',
+    //     status: 'active'
+    // };
 
     return await bioDataModel.aggregate([
-        {
-            $match: matchCondition
-        },
-        {
+        // {
+        //     $match: matchCondition
+        // },
+       {
             $lookup: {
                 from: 'users',
                 localField: 'userId',
@@ -97,6 +97,7 @@ bioDataService.getAll = async (request) => {
                 pipeline: [
                     {
                         $match: {
+                            username: username, // Match the username as a string
                             is_deleted: '0'
                         }
                     },
@@ -108,6 +109,13 @@ bioDataService.getAll = async (request) => {
                     }
                 ],
                 as: 'userInfo'
+            }
+        },
+         {
+            $match: {
+                'userInfo': { $ne: [] }, // Ensure user was found
+                is_deleted: '0',
+                status: 'active'
             }
         },
 
@@ -238,17 +246,12 @@ bioDataService.getAll = async (request) => {
     ]);
 };
 bioDataService.getAllBio = async (request) => {
-    const userId = request?.auth?._id || request?.query?.userId;
-    const matchCondition = {
-        userId: new mongoose.Types.ObjectId(userId),
-        is_deleted: '0',
-        status: 'active'
-    };
+    const username = request?.query?.username;
+    if (!username) {
+        throw new Error('Username is required in query parameters');
+    }
 
     return await bioDataModel.aggregate([
-        {
-            $match: matchCondition
-        },
         {
             $lookup: {
                 from: 'users',
@@ -257,6 +260,7 @@ bioDataService.getAllBio = async (request) => {
                 pipeline: [
                     {
                         $match: {
+                            username: username, 
                             is_deleted: '0'
                         }
                     },
@@ -268,6 +272,14 @@ bioDataService.getAllBio = async (request) => {
                     }
                 ],
                 as: 'userInfo'
+            }
+        },
+
+        {
+            $match: {
+                'userInfo': { $ne: [] }, 
+                is_deleted: '0',
+                status: 'active'
             }
         },
 
@@ -311,6 +323,7 @@ bioDataService.getAllBio = async (request) => {
                 as: 'educationExperience'
             }
         },
+
         {
             $lookup: {
                 from: 'educationalinformations',
@@ -351,6 +364,7 @@ bioDataService.getAllBio = async (request) => {
                 as: 'nonEducationExperience'
             }
         },
+       
         {
             $lookup: {
                 from: 'skills',
@@ -372,6 +386,7 @@ bioDataService.getAllBio = async (request) => {
                 as: 'skills'
             }
         },
+      
         {
             $project: {
                 username: { $arrayElemAt: ['$userInfo.username', 0] },
@@ -385,9 +400,10 @@ bioDataService.getAllBio = async (request) => {
                 experienceInfo: {
                     experience: '$educationExperience',
                     education: '$nonEducationExperience'
-                },
+                }
             }
         },
+        
         {
             $sort: {
                 updatedAt: -1
