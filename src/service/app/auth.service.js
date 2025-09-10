@@ -338,25 +338,23 @@ authService.updateprofile = async (request) => {
 //     ]);
 // };
 authService.getAll = async (request) => {
-    const userId = request?.query?._id;
+    const username = request?.query?.username;
     const protectedLinksPassword = request?.query?.protectedLinksPassword;
     let protectedLinksCondition = ["public"];
 
     if (protectedLinksPassword) {
-
-        const user = await userModel.findById(userId, { protectedLinksPassword: 1 });
+        // Use findOne to query by username instead of findById
+        const user = await userModel.findOne({ username }, { protectedLinksPassword: 1 });
 
         if (user && user.protectedLinksPassword === protectedLinksPassword) {
-
             protectedLinksCondition = ["public", "private"];
         }
-
     }
 
     return await userModel.aggregate([
         {
             $match: {
-                _id: new mongoose.Types.ObjectId(userId),
+                username: username,
                 status: 'active',
                 is_deleted: '0'
             }
@@ -459,7 +457,7 @@ authService.getAll = async (request) => {
                                 {
                                     $project: {
                                         videoLink: 1,
-                                        videoTitle:1
+                                        videoTitle: 1
                                     }
                                 }
                             ]
@@ -488,18 +486,12 @@ authService.getAll = async (request) => {
                                     $project: {
                                         title: 1,
                                         image: 1,
-                                        link:1
+                                        link: 1
                                     }
                                 }
                             ]
                         }
                     },
-                    // {
-                    //     $unwind: {
-                    //         path: "$linkcategory",
-                    //         preserveNullAndEmptyArrays: true
-                    //     }
-                    // },
                     {
                         $project: {
                             _id: 1,
@@ -507,8 +499,8 @@ authService.getAll = async (request) => {
                             linkUrl: 1,
                             linkLogo: 1,
                             type: 1,
-                            video:1,
-                            LinkCategoryId:1,
+                            video: 1,
+                            LinkCategoryId: 1,
                             status: 1,
                             is_index: 1,
                             protectedLinks: 1
