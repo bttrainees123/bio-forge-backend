@@ -213,18 +213,17 @@ class authController {
             // if (ObjectIdError) return;
             const userInfo = await userModel.findOne({ username: request.query.username });
          
-            if( request?.query?.protectedLinksPassword && userInfo.protectedLinksPassword !== request?.query?.protectedLinksPassword){
-                return responseHelper.BadRequest(response,`password is worng`,null, statusCodes.OK)
+            if (!userInfo) {
+                return responseHelper.Forbidden(response, `user not found`, null, statusCodes.UNAUTHORIZED)
             }
-            
-            if (userInfo.status === 'inactive'){
+            else if (userInfo.status === 'inactive'){
                 return responseHelper.Forbidden(response , userInfo?.username + " " + "you are inactive by admin !contact to admin",null ,statusCodes.UNAUTHORIZED);
             }
-            if(userInfo.is_deleted === "1"){
+            else if(userInfo.is_deleted === "1"){
                 return responseHelper.Forbidden(response ,userInfo?.username + " " + "Account deleted by admin ", null, statusCodes.UNAUTHORIZED);
             }
-            if (!userInfo) {
-                return responseHelper.Forbidden(response, `user not found`, null, statusCodes.OK)
+            if( request?.query?.protectedLinksPassword && userInfo.protectedLinksPassword !== request?.query?.protectedLinksPassword){
+                return responseHelper.BadRequest(response,`password is worng`,null, statusCodes.OK)
             }
             const data = await authService.getAll(request);
             return responseHelper.success(response, `all data fetched`, data, statusCodes.OK)
@@ -238,14 +237,14 @@ class authController {
             const ObjectIdError = responseHelper.mongooseObjectIdError(request?.query?._id, response, "_id");
             if (ObjectIdError) return;
             const userInfo = await userModel.findOne({ _id: request.query._id });
-            if (userInfo.status === 'inactive'){
-                return responseHelper.Forbidden(response , userInfo?.username + " " + "you are inactive by admin !contact to admin",null ,statusCodes.UNAUTHORIZED);
-            }
-            if(userInfo.is_deleted === "1"){
-                return responseHelper.Forbidden(response ,userInfo?.username + " " + "you are deleted by admin ! contact to admin", null, statusCodes.UNAUTHORIZED);
-            }
             if (!userInfo) {
                 return responseHelper.Forbidden(response, `user not found`, null, statusCodes.OK)
+            }
+            else if (userInfo.status === 'inactive'){
+                return responseHelper.Forbidden(response , userInfo?.username + " " + "you are inactive by admin !contact to admin",null ,statusCodes.UNAUTHORIZED);
+            }
+            else if(userInfo.is_deleted === "1"){
+                return responseHelper.Forbidden(response ,userInfo?.username + " " + "you are deleted by admin ! contact to admin", null, statusCodes.UNAUTHORIZED);
             }
             const data = await authService.getTokenAll(request);
             return responseHelper.success(response, `all data fetched`, data, statusCodes.OK)
