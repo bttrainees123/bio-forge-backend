@@ -209,9 +209,9 @@ class authController {
     }
     getUserInfo = async (request, response) => {
         try {
-            const ObjectIdError = responseHelper.mongooseObjectIdError(request?.query?._id, response, "_id");
-            if (ObjectIdError) return;
-            const userInfo = await userModel.findOne({ _id: request.query._id });
+            // const ObjectIdError = responseHelper.mongooseObjectIdError(request?.query?._id, response, "_id");
+            // if (ObjectIdError) return;
+            const userInfo = await userModel.findOne({ username: request.query.username });
          
             if( request?.query?.protectedLinksPassword && userInfo.protectedLinksPassword !== request?.query?.protectedLinksPassword){
                 return responseHelper.BadRequest(response,`password is worng`,null, statusCodes.OK)

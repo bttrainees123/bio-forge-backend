@@ -9,14 +9,14 @@ class authValidation {
         return Joi.object({
             username: Joi.string()
                 .min(3)
-                .max(20)
-                .pattern(/^\S+$/)
+                .max(10)
+                .pattern(/^[a-z0-9]+$/) // enforces lowercase letters and numbers, no spaces
                 .required()
                 .messages({
-                    "string.empty": "Name is required",
-                    "string.min": 'Name must be less than characters',
-                    "string.max": "Name must be at least characters long",
-                    "string.pattern.base": "Username must not contain spaces",
+                    "string.empty": "username is required",
+                    "string.min": "username must be at least 3 characters long",
+                    "string.max": "username must not exceed 10 characters",
+                    "string.pattern.base": "username must contain only lowercase letters or numbers, with no spaces",
                 }),
             // profile_img: Joi.string()
             //     .required()
@@ -221,7 +221,7 @@ class authValidation {
                     'string.min': 'Password must be at least 6 characters long',
                     'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number',
                 }),
-            })
+        })
     }
 
 

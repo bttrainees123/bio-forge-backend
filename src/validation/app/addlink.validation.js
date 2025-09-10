@@ -22,7 +22,7 @@ class addLinksValidation {
                     "string.empty": "Link URL is required",
                 }),
             linkLogo: Joi.string()
-                .required()
+                .optional()
                 .messages({
                     "string.empty": "Link logo URL is required",
                 }),

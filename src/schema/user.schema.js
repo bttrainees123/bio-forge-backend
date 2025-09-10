@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
         },
         fontFamily: {
             type: String,
-            default: 'cursive'
+            default: 'Times New Roman'
         },
         fontColor: {
             type: String,
