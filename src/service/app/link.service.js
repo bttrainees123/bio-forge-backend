@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const userModel = require('../../model/user.model');
 const {
-     ForbiddenError
+    ForbiddenError
 } = require('../../helper/customeErrors');
 
 const linkService = {}
@@ -75,14 +75,14 @@ linkService.update = async (request) => {
             { _id: new mongoose.Types.ObjectId(request?.body?._id) },
             { $unset: { videoId: "" }, $set: updateData }
         );
-    } 
+    }
     if (!Object.prototype.hasOwnProperty.call(request.body, "LinkCategoryId")) {
         await linkModel.updateOne(
             { _id: new mongoose.Types.ObjectId(request?.body?._id) },
             { $unset: { LinkCategoryId: "" }, $set: updateData }
         );
-    } 
-    
+    }
+
     else {
         await linkModel.updateOne(
             { _id: new mongoose.Types.ObjectId(request?.body?._id) },
@@ -173,31 +173,33 @@ linkService.get = async (request) => {
         },
 
         {
-            $addFields: {
-                "clicks": {
+    $addFields: {
+        clicks: {
+            $cond: {
+                if: { $ifNull: ["$clicks.userId", false] }, // if clicks has userId
+                then: {
+                    userId: "$clicks.userId",
+                    username: { $arrayElemAt: ["$userInfo.username", 0] }, // grab first username from lookup
+                    count: "$clicks.count",
+                    lastClickedAt: "$clicks.lastClickedAt"
+                },
+                else: {
                     $cond: {
-                        if: { $gt: [{ $size: "$userInfo" }, 0] },
+                        if: { $ifNull: ["$clicks.ipAddress", false] }, // fallback to ipAddress
                         then: {
-                            userInfo: {
-                                username: { $arrayElemAt: ["$userInfo.username", 0] },
-                                count: "$clicks.count"
-                            }
+                            ipAddress: "$clicks.ipAddress",
+                            count: "$clicks.count",
+                            lastClickedAt: "$clicks.lastClickedAt"
                         },
-                        else: {
-                            $cond: {
-                                if: { $ifNull: ["$clicks.ipAddress", false] },
-                                then: {
-                                    ipAddress: "$clicks.ipAddress",
-                                    count: "$clicks.count",
-                                    lastClickedAt: "$clicks.lastClickedAt",
-                                },
-                                else: null
-                            }
-                        }
+                        else: null
                     }
                 }
             }
-        },
+        }
+    }
+}
+
+        ,
         {
             $group: {
                 _id: "$_id",
@@ -231,7 +233,7 @@ linkService.get = async (request) => {
                 status: 1,
                 protectedLinks: 1,
                 videoId: 1,
-                LinkCategoryId:1,
+                LinkCategoryId: 1,
                 is_index: 1,
                 clickCount: 1,
                 clicks: {
