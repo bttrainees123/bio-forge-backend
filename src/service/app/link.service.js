@@ -188,7 +188,8 @@ linkService.get = async (request) => {
                                 if: { $ifNull: ["$clicks.ipAddress", false] },
                                 then: {
                                     ipAddress: "$clicks.ipAddress",
-                                    count: "$clicks.count"
+                                    count: "$clicks.count",
+                                    lastClickedAt: "$clicks.lastClickedAt"
                                 },
                                 else: null
                             }
@@ -230,7 +231,7 @@ linkService.get = async (request) => {
                 status: 1,
                 protectedLinks: 1,
                 videoId: 1,
-                LinkCategoryId:1,
+                LinkCategoryId: 1,
                 is_index: 1,
                 clickCount: 1,
                 clicks: {
