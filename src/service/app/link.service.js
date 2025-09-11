@@ -188,7 +188,8 @@ linkService.get = async (request) => {
                                 if: { $ifNull: ["$clicks.ipAddress", false] },
                                 then: {
                                     ipAddress: "$clicks.ipAddress",
-                                    count: "$clicks.count"
+                                    count: "$clicks.count",
+                                    lastClickedAt: "$clicks.lastClickedAt",
                                 },
                                 else: null
                             }
