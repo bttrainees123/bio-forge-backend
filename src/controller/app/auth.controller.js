@@ -295,6 +295,25 @@ class authController {
             return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
         }
     }
+    updateTemplateDesign = async (request, response) => {
+        try {
+            const data = await authService.updateTemplateDesign(request);
+            return responseHelper.success(response, "Template design updated successfully", data, statusCodes.OK);
+        } catch (error) {
+            console.error(error);
+            return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
+            
+        }
+    }
+    getUserDetail = async (request, response) => {
+        try {
+            const data = await authService.getUserDetail(request);
+            return responseHelper.success(response, "User Template fetched successfully", data, statusCodes.OK);
+        } catch (error) {
+            console.error(error);
+            return responseHelper.error(response, error.message, statusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
 module.exports = new authController();

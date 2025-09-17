@@ -77,5 +77,8 @@ userRouter.post('/updateBioData', middleWare, bioDataController.update);
 // userRouter.get('/status-Experience',middleWare,bioDataController.updateStatus);
 userRouter.get('/getAll-bio-data',middleWare, bioDataController.getAll);
 userRouter.get('/getAllBio', bioDataController.getAllBio);
+//update template design
+userRouter.put('/update-templateDesign', middleWare, authController.updateTemplateDesign);
+userRouter.get('/get-userDetail', authController.getUserDetail);
 
 module.exports = userRouter

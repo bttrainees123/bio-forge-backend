@@ -7,6 +7,7 @@ const adminMiddleWare = require("../../middleware/admin.middleware");
 const reportController = require('../../controller/app/report.controller');
 const themeController = require('../../controller/app/theme.controller');
 const skillNameController = require('../../controller/admin/addSkill.controller');
+const templateController = require('../../controller/app/themeDesign.controller');
 
 const adminRouter = express.Router();
 //login
@@ -40,6 +41,13 @@ adminRouter.get("/getAll-theme", userController.getTemplateList);
 adminRouter.post('/addSkill',adminMiddleWare,skillNameController.add);
 adminRouter.post('/updateSkill',adminMiddleWare,skillNameController.update);
 adminRouter.get('/getAllSkill',skillNameController.getAll);
+
+//add template
+adminRouter.post('/add-template', adminMiddleWare, templateController.add);
+adminRouter.put('/update-template', adminMiddleWare, templateController.update);
+adminRouter.delete('/delete-template', adminMiddleWare, templateController.delete);
+adminRouter.get('/getAll-template', templateController.getAll);
+// userRouter.get('/status-template', adminMiddleWare, templateController.status);
 
 
 module.exports = adminRouter

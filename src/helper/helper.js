@@ -1,33 +1,41 @@
 const bcrypt = require("bcrypt");
-const path = require("path")
+const path = require("path");
 const otpGenerator = require('otp-generator');
 const jwt = require("jsonwebtoken");
 const { mkdir } = require('node:fs/promises');
 const jetpack = require("fs-jetpack");
 const fs = require("fs");
-const helper = {}
-const saltnumber = 10
-const secretkey = "RobertRDalgadoverses"
+const sanitizeHtml = require('sanitize-html');
+
+const saltnumber = 10;
+const secretkey = "RobertRDalgadoverses";
+const helper = {};
+
 helper.createPassword = async (password) => {
     return await bcrypt.hash(password, saltnumber);
-}
+};
+
 helper.comparePassword = async (password, hashPassword) => {
-    return await bcrypt.compare(password, hashPassword)
-}
+    return await bcrypt.compare(password, hashPassword);
+};
+
 helper.compareprotectedLinksPassword = function (candidate) {
     return bcrypt.compare(candidate, this.protectedLinksPassword);
 };
+
 helper.generateTokken = (Data) => {
-    return jwt.sign(Data, secretkey,)
-}
+    return jwt.sign(Data, secretkey);
+};
+
 helper.otp = () => {
     const response = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
     });
-    return response
-}
+    return response;
+};
+
 helper.applyPagination = (skip, limit) => {
     return {
         $facet: {
@@ -39,6 +47,7 @@ helper.applyPagination = (skip, limit) => {
         }
     };
 };
+
 helper.getFilteredTopic = (language) => ({
     $filter: {
         input: "$topic",
@@ -65,4 +74,14 @@ helper.moveFileFromFolder = async (filename, targetFolder) => {
     fs.renameSync(sourcePath, destinationPath);
     return newFilename;
 };
-module.exports = helper
+
+helper.sanitize = (input) => {
+    if (!input) return '';
+    return sanitizeHtml(input, {
+        allowedTags: [],
+        allowedAttributes: {},
+        disallowedTagsMode: 'discard'
+    });
+};
+
+module.exports = helper;

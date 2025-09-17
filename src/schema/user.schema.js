@@ -52,7 +52,14 @@ const userSchema = new mongoose.Schema({
         themeDesign: {
             type: String,
             default: 'retro'
-        }
+        },
+        templateDesign: {
+            type: Number, 
+            default: 1    
+        },
+        templateDesignHtml: { 
+            type: String 
+        } 
     },
     protectedLinks: {
         type: String,
@@ -61,10 +68,7 @@ const userSchema = new mongoose.Schema({
     },
     protectedLinksPassword: {
         type: String,
-
-
     },
-
     is_deleted: {
         type: String,
         enum: ["0", "1"],

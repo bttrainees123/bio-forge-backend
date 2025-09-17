@@ -6,7 +6,7 @@ const emailTemplateImage = require("../../config/template");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-const templateModel = require("../../model/theme.model");
+const templateModel = require("../../model/themeDesign.model");
 
 const authService = {}
 authService.register = async (request) => {
@@ -248,95 +248,72 @@ authService.updateprofile = async (request) => {
     );
     return;
 };
-// authService.getAll = async (request) => {
-//     const userId = request.query._id;
-//     const protectedLinksPassword = request.query.protectedLinksPassword;
+authService.getAlltheme = async (request) => {
+    const userId = request.query._id;
+    const makePipeline = (type) => [
+        {
+            $match: {
+                status: 'active',
+                is_deleted: '0',
+                type,
 
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                linkTitle: 1,
+                linkUrl: 1,
+                linkLogo: 1,
+                type: 1,
+                status: 1,
+                is_index: 1,
+                protectedLinks: 1
+            }
+        }
+    ];
 
-//     const user = await userModel.findById(userId).select('+protectedLinksPassword');
-
-//     let allowedProjected = ['public'];
-
-//     if (protectedLinksPassword && user) {
-//         const isMatch = await user.compareprotectedLinksPassword(protectedLinksPassword);
-//         if (isMatch) {
-//             allowedProjected = ['public', 'private'];
-//         }
-//     }
-
-
-//     const makePipeline = (type) => [
-//         {
-//             $match: {
-//                 status: 'active',
-//                 is_deleted: '0',
-//                 type,
-//                 protectedLinks: { $in: allowedProjected }
-//             }
-//         },
-//         {
-//             $addFields: {
-//                 sort_index: { $ifNull: ['$is_index', 999999] }
-//             }
-//         },
-//         {
-//             $sort: { sort_index: 1, type: -1 }
-//         },
-//         {
-//             $project: {
-//                 _id: 1,
-//                 linkTitle: 1,
-//                 linkUrl: 1,
-//                 linkLogo: 1,
-//                 type: 1,
-//                 status: 1,
-//                 is_index: 1,
-//                 protectedLinks: 1
-//             }
-//         }
-//     ];
-
-//     return await userModel.aggregate([
-//         {
-//             $match: {
-//                 _id: new mongoose.Types.ObjectId(userId),
-//                 status: 'active',
-//                 is_deleted: '0'
-//             }
-//         },
-//         {
-//             $lookup: {
-//                 from: 'links',
-//                 localField: '_id',
-//                 foreignField: 'userId',
-//                 as: 'social',
-//                 pipeline: makePipeline('social')
-//             }
-//         },
-//         {
-//             $lookup: {
-//                 from: 'links',
-//                 localField: '_id',
-//                 foreignField: 'userId',
-//                 as: 'non_social',
-//                 pipeline: makePipeline('non_social')
-//             }
-//         },
-//         {
-//             $project: {
-//                 _id: 1,
-//                 username: 1,
-//                 email: 1,
-//                 bio: 1,
-//                 profile_img: 1,
-//                 banner_img: 1,
-//                 theme: 1,
-//                 social: 1,
-//                 non_social: 1
-//             }
-//         }
-//     ]);
-// };
+    return await userModel.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(userId),
+                status: 'active',
+                is_deleted: '0'
+            }
+        },
+        {
+            $lookup: {
+                from: 'links',
+                localField: '_id',
+                foreignField: 'userId',
+                as: 'social',
+                pipeline: makePipeline('social')
+            }
+        },
+        {
+            $lookup: {
+                from: 'links',
+                localField: '_id',
+                foreignField: 'userId',
+                as: 'non_social',
+                pipeline: makePipeline('non_social')
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                username: 1,
+                email: 1,
+                bio: 1,
+                profile_img: 1,
+                banner_img: 1,
+                theme: 1,
+                social: 1,
+                non_social: 1
+            }
+        }
+    ]);
+};
 authService.getAll = async (request) => {
     const username = request?.query?.username;
     const protectedLinksPassword = request?.query?.protectedLinksPassword;
@@ -621,7 +598,7 @@ authService.getTokenAll = async (request) => {
                                 {
                                     $project: {
                                         videoLink: 1,
-                                        videoTitle:1
+                                        videoTitle: 1
                                     }
                                 }
                             ]
@@ -650,7 +627,7 @@ authService.getTokenAll = async (request) => {
                                     $project: {
                                         title: 1,
                                         image: 1,
-                                        link:1
+                                        link: 1
                                     }
                                 }
                             ]
@@ -765,7 +742,75 @@ authService.getTemplate = async (templateId, userId) => {
     );
     return { template, updatedUser };
 }
+authService.updateTemplateDesign= async (request) => {
+ 
+      const { username, name } = request.body;
+      if (!name) {
+        return {
+          status: false,
+          message: 'name is required',
+          data: null
+        };
+      }
+      const template = await templateModel.findOne({ 
+        name: { $regex: new RegExp('^' + name + '$', 'i') }
+      });
 
+      if (!template) {
+        return {
+          status: false,
+          message: `Template '${name}' not found`,
+          data: null
+        };
+      }
 
+      const user = await userModel.findOneAndUpdate(
+        { username, status: 'active', is_deleted: '0' },
+        { $set: { 'theme.templateDesignHtml': template.templateBody } },
+        { new: true, runValidators: true, select: 'username theme' }
+      );
+
+      if (!user) {
+        return {
+          status: false,
+          message: 'User not found or inactive',
+          data: null
+        };
+      }
+
+      return {
+        status: true,
+        message: 'Template applied successfully',
+        data: { username: user.username, templateDesignHtml: user.theme.templateDesignHtml }
+      };
+
+  }
+
+authService.getUserDetail= async (request) => {
+  const username = request?.query?.username;
+ const data = await userModel.aggregate ([
+     {
+        $match:{
+            username:username
+        }
+    },
+    {
+      $project:{
+        username:1,
+         email:1,
+         social:1,
+           non_social:1,
+            bio:1,
+             banner_img:1,
+              profile_img:1,
+               theme:1
+      }
+    }
+]);
+console.log('======',data)
+  return data
+
+   
+  }
 
 module.exports = authService
